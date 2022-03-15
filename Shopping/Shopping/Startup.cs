@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shopping.Data;
+using Shopping.Data.Entities;
+using Shopping.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Shopping
 {
@@ -36,6 +35,18 @@ namespace Shopping
 
             //Se va a usar una sola vez
             services.AddTransient<SeedDb>();
+            services.AddScoped<IUserHelper, UserHelper>();
+
+            //TODO: Mail strongest password
+            services.AddIdentity<User, IdentityRole>(cfg =>
+            {
+                cfg.User.RequireUniqueEmail = true;
+                cfg.Password.RequireDigit = false;
+                cfg.Password.RequiredUniqueChars = 0;
+                cfg.Password.RequireLowercase = false;
+                cfg.Password.RequireNonAlphanumeric = false;
+                cfg.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<DataContext>();
 
             services.AddDbContext<DataContext>(option =>
             {
@@ -63,9 +74,8 @@ namespace Shopping
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
