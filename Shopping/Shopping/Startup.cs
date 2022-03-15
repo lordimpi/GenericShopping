@@ -27,10 +27,25 @@ namespace Shopping
         {
             services.AddControllersWithViews();
 
+            //Ciclo de vida de los objetos
+            //La injecta cada vez que la necesita y destruye cuando lo deja de usar
+            //services.AddScoped<SeedDb>();
+
+            //Se injecta una vez y lo deja en memoria. Utiliza el patron Singleton no lo destruye
+            //services.AddSingleton<SeedDb>();
+
+            //Se va a usar una sola vez
+            services.AddTransient<SeedDb>();
+
             services.AddDbContext<DataContext>(option =>
             {
                 option.UseSqlServer(Configuration.GetConnectionString("SQL"));
             });
+        }
+
+        private void SeedData()
+        {
+            throw new NotImplementedException();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
